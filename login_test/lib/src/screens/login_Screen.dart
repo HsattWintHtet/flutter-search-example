@@ -6,15 +6,14 @@ class LogInScreen extends StatelessWidget{
       margin: EdgeInsets.all(5.0),
       child: Column(
         children: <Widget>[
-          FirstField()
+          TextPart()
         ],
       ),
     );
   }
-}
 
-class FirstField extends StatelessWidget {
-  Widget build(BuildContext context) {
+
+  Widget textPart() {
     return Card(
       child: Column(
         children: <Widget>[
@@ -39,3 +38,5 @@ class FirstField extends StatelessWidget {
     );
   }
 }
+
+

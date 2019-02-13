@@ -6,7 +6,7 @@ class LogInScreen extends StatelessWidget{
       margin: EdgeInsets.all(5.0),
       child: Column(
         children: <Widget>[
-          TextPart()
+          textPart()
         ],
       ),
     );

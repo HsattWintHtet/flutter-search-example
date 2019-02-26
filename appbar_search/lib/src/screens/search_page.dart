@@ -11,8 +11,8 @@ class SearchPage extends StatelessWidget {
     }
   }
 
-  Widget leadingWidgetAppbar(
-      BuildContext context, AsyncSnapshot snapshot, SearchBloc bloc, TextEditingController controller) {
+  Widget leadingWidgetAppbar(BuildContext context, AsyncSnapshot snapshot,
+      SearchBloc bloc, TextEditingController controller) {
     if (snapshot.data) {
       return GestureDetector(
         child: Icon(Icons.arrow_back),
@@ -29,7 +29,7 @@ class SearchPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = SearchProvider.of(context);
 
-    var controller =TextEditingController();
+    var controller = TextEditingController();
     var _focusNode = FocusNode();
 
     _focusNode.addListener(() {
@@ -38,7 +38,7 @@ class SearchPage extends StatelessWidget {
     });
 
     bloc.changeFocus(false);
-    
+
     return StreamBuilder(
       stream: bloc.focusField,
       builder: (context, snapshot) {
@@ -46,6 +46,7 @@ class SearchPage extends StatelessWidget {
           appBar: AppBar(
             leading: leadingWidgetAppbar(context, snapshot, bloc, controller),
             title: TextField(
+              onChanged: bloc.changeSearch,
               controller: controller,
               focusNode: _focusNode,
               decoration: InputDecoration(
@@ -54,7 +55,15 @@ class SearchPage extends StatelessWidget {
             ),
           ),
           body: Container(
-            child: bodyPart(context, snapshot),
+            child: StreamBuilder(
+              stream: bloc.searchField,
+              builder: (context, searchsnapshot) {
+                if (searchsnapshot.hasData) {
+                  return Text(searchsnapshot.data);
+                }
+                return Text('Somethings Gonna Appear Here');
+              },
+            ),
           ),
         );
       },

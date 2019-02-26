@@ -11,14 +11,61 @@ class SearchPage extends StatelessWidget {
       print(_focusNode.hasFocus);
       bloc.changeFocus(_focusNode.hasFocus);
     });
-    return Scaffold(
+    bloc.changeFocus(false);
+    return StreamBuilder(
+      stream: bloc.focusField,
+      builder: (context, snapshot) {
+        return Scaffold(
+          appBar: AppBar(
+            leading:
+                snapshot.data ? GestureDetector(child: Icon(Icons.arrow_back),onTap: (){FocusScope.of(context).requestFocus(FocusNode());bloc.changeFocus(false);},) : Icon(Icons.search),
+            title: TextField(
+              focusNode: _focusNode,
+              decoration: InputDecoration(
+                hintText: 'Search',
+              ),
+            ),
+          ),
+          body: Container(
+            child: Column(
+              children: <Widget>[
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    FocusScope.of(context).requestFocus(FocusNode());
+                  },
+                  child: StreamBuilder(
+                    stream: bloc.focusField,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        if (snapshot.data) {
+                          return Text('Hello I waited Here For U');
+                        } else {
+                          return Text('Everlong');
+                        }
+                      } else {
+                        return Text('Hooooo');
+                      }
+                    },
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    /*
+    Scaffold(
       appBar: AppBar(
+        leading: _focusNode.hasFocus?Icon(Icons.arrow_back):Icon(Icons.search),
         title: TextField(
           onEditingComplete: () {},
           focusNode: _focusNode,
           decoration: InputDecoration(
             labelText: 'Hello World',
-            icon: Icon(Icons.search),
+            //icon: Icon(Icons.search),
           ),
         ),
       ),
@@ -29,26 +76,30 @@ class SearchPage extends StatelessWidget {
             onTap: () {
               FocusScope.of(context).requestFocus(FocusNode());
             },
-            child: Text('Olakka'),
+            child: Container(
+                color: Colors.yellow,
+                alignment: FractionalOffset.center,
+                width: double.maxFinite,
+                child: StreamBuilder(
+                  stream: bloc.focusField,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      if (snapshot.data) {
+                        return Text('Hello I waited Here For U');
+                      } else {
+                        return Text('Everlong');
+                      }
+                    } else {
+                      return Text('Hooooo');
+                    }
+                  },
+                ),
+              ),
+            
           ),
-          StreamBuilder(
-              stream: bloc.focusField,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  if(snapshot.data){
-                    return Text('Hello I waited Here For U');
-                  }
-                  else{
-                    return Text('Everlong');
-                  }
-                } else {
-                  return Text('Hooooo');
-                }
-              },
-            )
         ],
       ),
-    );
+    );*/
   }
 }
 

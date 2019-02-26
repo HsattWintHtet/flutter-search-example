@@ -12,13 +12,14 @@ class SearchPage extends StatelessWidget {
   }
 
   Widget leadingWidgetAppbar(
-      BuildContext context, AsyncSnapshot snapshot, SearchBloc bloc) {
+      BuildContext context, AsyncSnapshot snapshot, SearchBloc bloc, TextEditingController controller) {
     if (snapshot.data) {
       return GestureDetector(
         child: Icon(Icons.arrow_back),
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
           bloc.changeFocus(false);
+          controller.text = "";
         },
       );
     }
@@ -28,19 +29,24 @@ class SearchPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = SearchProvider.of(context);
 
+    var controller =TextEditingController();
     var _focusNode = FocusNode();
+
     _focusNode.addListener(() {
       print(_focusNode.hasFocus);
       bloc.changeFocus(_focusNode.hasFocus);
     });
+
     bloc.changeFocus(false);
+    
     return StreamBuilder(
       stream: bloc.focusField,
       builder: (context, snapshot) {
         return Scaffold(
           appBar: AppBar(
-            leading: leadingWidgetAppbar(context, snapshot, bloc),
+            leading: leadingWidgetAppbar(context, snapshot, bloc, controller),
             title: TextField(
+              controller: controller,
               focusNode: _focusNode,
               decoration: InputDecoration(
                 hintText: 'Search',

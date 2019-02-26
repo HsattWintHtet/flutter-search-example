@@ -3,6 +3,28 @@ import 'package:dio/dio.dart';
 import '../blocs/search_bloc_provider.dart';
 
 class SearchPage extends StatelessWidget {
+  Widget bodyPart(BuildContext context, AsyncSnapshot snapshot) {
+    if (snapshot.data) {
+      return Text("I m a bad code.");
+    } else {
+      return Text("If you can read this code then you must be god.");
+    }
+  }
+
+  Widget leadingWidgetAppbar(
+      BuildContext context, AsyncSnapshot snapshot, SearchBloc bloc) {
+    if (snapshot.data) {
+      return GestureDetector(
+        child: Icon(Icons.arrow_back),
+        onTap: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+          bloc.changeFocus(false);
+        },
+      );
+    }
+    return Icon(Icons.search);
+  }
+
   Widget build(BuildContext context) {
     final bloc = SearchProvider.of(context);
 
@@ -17,8 +39,7 @@ class SearchPage extends StatelessWidget {
       builder: (context, snapshot) {
         return Scaffold(
           appBar: AppBar(
-            leading:
-                snapshot.data ? GestureDetector(child: Icon(Icons.arrow_back),onTap: (){FocusScope.of(context).requestFocus(FocusNode());bloc.changeFocus(false);},) : Icon(Icons.search),
+            leading: leadingWidgetAppbar(context, snapshot, bloc),
             title: TextField(
               focusNode: _focusNode,
               decoration: InputDecoration(
@@ -27,30 +48,7 @@ class SearchPage extends StatelessWidget {
             ),
           ),
           body: Container(
-            child: Column(
-              children: <Widget>[
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    FocusScope.of(context).requestFocus(FocusNode());
-                  },
-                  child: StreamBuilder(
-                    stream: bloc.focusField,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        if (snapshot.data) {
-                          return Text('Hello I waited Here For U');
-                        } else {
-                          return Text('Everlong');
-                        }
-                      } else {
-                        return Text('Hooooo');
-                      }
-                    },
-                  ),
-                )
-              ],
-            ),
+            child: bodyPart(context, snapshot),
           ),
         );
       },

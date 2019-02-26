@@ -3,9 +3,18 @@ import 'package:dio/dio.dart';
 import '../blocs/search_bloc_provider.dart';
 
 class SearchPage extends StatelessWidget {
-  Widget bodyPart(BuildContext context, AsyncSnapshot snapshot) {
+  Widget bodyPart(BuildContext context, AsyncSnapshot snapshot, SearchBloc bloc) {
     if (snapshot.data) {
-      return Text("I m a bad code.");
+      return StreamBuilder(
+        stream: bloc.searchField,
+        builder: (context, snapshot){
+          if(snapshot.hasData){
+            return Text(snapshot.data);
+          } else {
+            return Text('Type something Yo');
+          }
+        },
+      );
     } else {
       return Text("If you can read this code then you must be god.");
     }
@@ -55,64 +64,11 @@ class SearchPage extends StatelessWidget {
             ),
           ),
           body: Container(
-            child: StreamBuilder(
-              stream: bloc.searchField,
-              builder: (context, searchsnapshot) {
-                if (searchsnapshot.hasData) {
-                  return Text(searchsnapshot.data);
-                }
-                return Text('Somethings Gonna Appear Here');
-              },
-            ),
+            child: bodyPart(context, snapshot, bloc),
           ),
         );
       },
     );
-
-    /*
-    Scaffold(
-      appBar: AppBar(
-        leading: _focusNode.hasFocus?Icon(Icons.arrow_back):Icon(Icons.search),
-        title: TextField(
-          onEditingComplete: () {},
-          focusNode: _focusNode,
-          decoration: InputDecoration(
-            labelText: 'Hello World',
-            //icon: Icon(Icons.search),
-          ),
-        ),
-      ),
-      body: Column(
-        children: <Widget>[
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              FocusScope.of(context).requestFocus(FocusNode());
-            },
-            child: Container(
-                color: Colors.yellow,
-                alignment: FractionalOffset.center,
-                width: double.maxFinite,
-                child: StreamBuilder(
-                  stream: bloc.focusField,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data) {
-                        return Text('Hello I waited Here For U');
-                      } else {
-                        return Text('Everlong');
-                      }
-                    } else {
-                      return Text('Hooooo');
-                    }
-                  },
-                ),
-              ),
-            
-          ),
-        ],
-      ),
-    );*/
   }
 }
 

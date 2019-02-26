@@ -1,6 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import '../blocs/search_bloc_provider.dart';
 
+class SearchPage extends StatelessWidget {
+  Widget build(BuildContext context) {
+    final bloc = SearchProvider.of(context);
+
+    var _focusNode = FocusNode();
+    _focusNode.addListener(() {
+      print(_focusNode.hasFocus);
+      bloc.changeFocus(_focusNode.hasFocus);
+    });
+    return Scaffold(
+      appBar: AppBar(
+        title: TextField(
+          onEditingComplete: () {},
+          focusNode: _focusNode,
+          decoration: InputDecoration(
+            labelText: 'Hello World',
+            icon: Icon(Icons.search),
+          ),
+        ),
+      ),
+      body: Column(
+        children: <Widget>[
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              FocusScope.of(context).requestFocus(FocusNode());
+            },
+            child: Text('Olakka'),
+          ),
+          StreamBuilder(
+              stream: bloc.focusField,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  if(snapshot.data){
+                    return Text('Hello I waited Here For U');
+                  }
+                  else{
+                    return Text('Everlong');
+                  }
+                } else {
+                  return Text('Hooooo');
+                }
+              },
+            )
+        ],
+      ),
+    );
+  }
+}
+
+/*
 class SearchPage extends StatefulWidget {
   @override
   _SearchPageState createState() => new _SearchPageState();
@@ -15,7 +67,7 @@ class _SearchPageState extends State<SearchPage> {
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Search Example');
 
-  _ExamplePageState() {
+  _SearchPageState() {
     _filter.addListener(() {
       if (_filter.text.isEmpty) {
         setState(() {
@@ -111,3 +163,5 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 }
+
+*/

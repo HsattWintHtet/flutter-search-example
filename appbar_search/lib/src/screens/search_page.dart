@@ -3,18 +3,32 @@ import 'package:dio/dio.dart';
 import '../blocs/search_bloc_provider.dart';
 
 class SearchPage extends StatelessWidget {
-  Widget bodyPart(BuildContext context, AsyncSnapshot snapshot, SearchBloc bloc) {
+  Widget bodyPart(BuildContext context, AsyncSnapshot snapshot, SearchBloc bloc,
+      var items) {
     if (snapshot.data) {
+      List<Widget> widgets = [];
+      for(int i = 0; i<items.length; i++){
+        widgets.add(ListTile(
+          title: Text(items[i]),
+        ));
+      }
+      print("I m fucken here");
       return StreamBuilder(
         stream: bloc.searchField,
-        builder: (context, snapshot){
-          if(snapshot.hasData){
-            return Text(snapshot.data);
-          } else {
-            return Text('Type something Yo');
+        builder: (context, searchSnapshot){
+          if(searchSnapshot.hasData){
+            return ListView(
+              children: <Widget>[Column(
+              children: widgets,
+            )],
+            );
+          }
+          else{
+            return Text("Type something Yo");
           }
         },
       );
+
     } else {
       return Text("If you can read this code then you must be god.");
     }
@@ -36,8 +50,19 @@ class SearchPage extends StatelessWidget {
   }
 
   Widget build(BuildContext context) {
-    final bloc = SearchProvider.of(context);
+    final dio = new Dio();
+    List items = List();
+    void getItems() async {
+      final response = await dio.get('https://swapi.co/api/people');
+      for (int i = 0; i < response.data['results'].length; i++) {
+        items.add(response.data['results'][i]["name"]);
+      }
+      print(items);
+    }
+    
+    getItems();
 
+    final bloc = SearchProvider.of(context);
     var controller = TextEditingController();
     var _focusNode = FocusNode();
 
@@ -47,7 +72,6 @@ class SearchPage extends StatelessWidget {
     });
 
     bloc.changeFocus(false);
-
     return StreamBuilder(
       stream: bloc.focusField,
       builder: (context, snapshot) {
@@ -64,7 +88,7 @@ class SearchPage extends StatelessWidget {
             ),
           ),
           body: Container(
-            child: bodyPart(context, snapshot, bloc),
+            child: bodyPart(context, snapshot, bloc, items),
           ),
         );
       },

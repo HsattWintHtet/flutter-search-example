@@ -3,32 +3,25 @@ import 'package:dio/dio.dart';
 import '../blocs/search_bloc_provider.dart';
 
 class SearchPage extends StatelessWidget {
-  Widget bodyPart(BuildContext context, AsyncSnapshot snapshot, SearchBloc bloc,
-      var items) {
+  Widget bodyPart(BuildContext context, AsyncSnapshot snapshot, SearchBloc bloc) {
     if (snapshot.data) {
-      List<Widget> widgets = [];
-      for(int i = 0; i<items.length; i++){
-        widgets.add(ListTile(
-          title: Text(items[i]),
-        ));
-      }
+      //Widget fromApi =MakeApiRequest();
       print("I m fucken here");
+
       return StreamBuilder(
         stream: bloc.searchField,
-        builder: (context, searchSnapshot){
-          if(searchSnapshot.hasData){
-            return ListView(
-              children: <Widget>[Column(
-              children: widgets,
-            )],
-            );
-          }
-          else{
+        builder: (context, searchSnapshot) {
+          if (searchSnapshot.hasData) {
+            if ("" == searchSnapshot.data) {
+              return Text("Second Time Here?");
+            }
+            print("In here");
+            return Text(":(");;
+          } else {
             return Text("Type something Yo");
           }
         },
       );
-
     } else {
       return Text("If you can read this code then you must be god.");
     }
@@ -50,18 +43,7 @@ class SearchPage extends StatelessWidget {
   }
 
   Widget build(BuildContext context) {
-    final dio = new Dio();
-    List items = List();
-    void getItems() async {
-      final response = await dio.get('https://swapi.co/api/people');
-      for (int i = 0; i < response.data['results'].length; i++) {
-        items.add(response.data['results'][i]["name"]);
-      }
-      print(items);
-    }
-    
-    getItems();
-
+  
     final bloc = SearchProvider.of(context);
     var controller = TextEditingController();
     var _focusNode = FocusNode();
@@ -88,7 +70,7 @@ class SearchPage extends StatelessWidget {
             ),
           ),
           body: Container(
-            child: bodyPart(context, snapshot, bloc, items),
+            child: bodyPart(context, snapshot, bloc),
           ),
         );
       },
@@ -209,3 +191,33 @@ class _SearchPageState extends State<SearchPage> {
 }
 
 */
+
+class MakeApiRequest extends StatelessWidget {
+  Widget build(BuildContext context) {
+    final dio = new Dio();
+    List items = List();
+    void getItems() async {
+      final response = await dio.get('https://swapi.co/api/people');
+      for (int i = 0; i < response.data['results'].length; i++) {
+        items.add(response.data['results'][i]["name"]);
+      }
+      print(items);
+    }
+
+    getItems();
+    List<Widget> widgets = [];
+    for (int i = 0; i < items.length; i++) {
+      widgets.add(ListTile(
+        title: Text(items[i]),
+      ));
+    }
+
+    return ListView(
+      children: [
+        Column(
+          children: widgets,
+        )
+      ],
+    );
+  }
+}

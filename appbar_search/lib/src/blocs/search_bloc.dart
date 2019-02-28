@@ -1,39 +1,36 @@
 import 'dart:async';
-import 'package:dio/dio.dart';
 import 'package:rxdart/rxdart.dart';
-import 'dart:convert';
+//import 'dart:convert';
+//import '../models/item_model.dart';
+import '../resources/repository.dart';
 
 class SearchBloc {
-  final dio = new Dio();
-  String _searchText = '';
-  List items = List();
-  List filteredItems = List();
+
+  final _repository = Repository();
+  final _names =PublishSubject();
 
   final _focusField = BehaviorSubject<bool>();
   final _searchField = BehaviorSubject<String>();
 
+  Observable get names => _names.stream;
   Stream<bool> get focusField => _focusField.stream;
   Stream<String> get searchField => _searchField.stream;
 
   Function(bool) get changeFocus => _focusField.sink.add;
   Function(String) get changeSearch => _searchField.sink.add;
 
-  void getItems() async {
-    final response = await dio.get('https://swapi.co/api/people');
-    print(response); 
-    var tempList = List(); 
-    for (int i = 0; i < response.data['results'].length; i++) {
-      print(response.data['results'][i]["name"]);
-      print("WTF is happening");
-      tempList.add(response.data['results'][i]["name"]); 
-    }
-
-    items = tempList;
+  fetchNames() async {
+    final results = await _repository.fetchPeopleNames();
+    /*
+    var names = List();
+    for(int i=0;i<names.length;i++){
+      tempItems.add(ItemModel(name: names[i]));
+    }*/
+    _names.sink.add(results);
   }
 
-
-
   dispose() {
+    _names.close();
     _focusField.close();
     _searchField.close();
   }

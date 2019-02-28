@@ -3,8 +3,31 @@ import 'package:dio/dio.dart';
 import '../blocs/search_bloc_provider.dart';
 
 class SearchPage extends StatelessWidget {
-  Widget bodyPart(BuildContext context, AsyncSnapshot snapshot, SearchBloc bloc) {
+  Widget bodyPart(
+      BuildContext context, AsyncSnapshot snapshot, SearchBloc bloc) {
     if (snapshot.data) {
+      bloc.fetchNames();
+      return StreamBuilder(
+        stream: bloc.names,
+        builder: (context, newSnapshot) {
+          if (!newSnapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          print(newSnapshot.data);
+          print("Got data");
+          return ListView.builder(
+            itemCount: newSnapshot.data.length,
+            itemBuilder: (context, int index) {
+              return ListTile(
+                title: Text(newSnapshot.data[index]),
+              );
+            },
+          );
+        },
+      );
+      /*
       //Widget fromApi =MakeApiRequest();
       print("I m fucken here");
 
@@ -21,7 +44,7 @@ class SearchPage extends StatelessWidget {
             return Text("Type something Yo");
           }
         },
-      );
+      );*/
     } else {
       return Text("If you can read this code then you must be god.");
     }
@@ -43,7 +66,6 @@ class SearchPage extends StatelessWidget {
   }
 
   Widget build(BuildContext context) {
-  
     final bloc = SearchProvider.of(context);
     var controller = TextEditingController();
     var _focusNode = FocusNode();
